@@ -27,6 +27,12 @@ public class BattleController extends AbstractController {
 
 	@FXML
 	private Label battleTotalLosses;
+	
+	@FXML
+	private Label battleLeaderAttacker;
+	
+	@FXML
+	private Label battleLeaderDefender;
 
 	@FXML
 	private BattleCountryBox attackerBoxController;
@@ -62,6 +68,8 @@ public class BattleController extends AbstractController {
 		battleLocation.setText(Integer.toString(battle.getLocation()));
 		battleResult.setText(battle.getRes().toString());
 		battleTotalLosses.setText(Integer.toString(battle.getTotalLosses()));
+		battleLeaderAttacker.setText(battle.getLeaderAttacker());
+		battleLeaderDefender.setText(battle.getLeaderDefender());
 
 		attackerBoxController.populate(battle);
 		defenderBoxController.populate(battle);

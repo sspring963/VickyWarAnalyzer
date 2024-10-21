@@ -3,12 +3,24 @@ package ee.tkasekamp.vickywaranalyzer.parser;
 import ee.tkasekamp.vickywaranalyzer.core.*;
 import ee.tkasekamp.vickywaranalyzer.core.Battle.Result;
 import ee.tkasekamp.vickywaranalyzer.service.ModelService;
+import ee.tkasekamp.vickywaranalyzer.core.Battle;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 
 /**
  * Readers in order of activation in a typical save game:
@@ -53,6 +65,7 @@ public class Parser {
 //	static public Reference saveGameData = new Reference(); // public so it can be used by all methods
 
 	private ModelService modelService;
+	private	XSSFWorkbook workbook = new XSSFWorkbook();
 
 	public Parser(ModelService modelService) {
 		this.modelService = modelService;
@@ -155,8 +168,104 @@ public class Parser {
 		scanner.close();
 		/* Setting the start date and casus belli */
 		warList.forEach(ee.tkasekamp.vickywaranalyzer.core.War::setCasusBelliAndStartDate);
+		
+		XSSFSheet spreadsheet1 = workbook.createSheet("Wars"); 
+		XSSFSheet spreadsheet2 = workbook.createSheet("Battles");
+		XSSFRow row;
+		
+		Map<String, Object[]> warData = new TreeMap<String, Object[]>(); 
+		Map<String, Object[]> battleData = new TreeMap<String, Object[]>(); 
+		warData.put("1", new Object[] {"Name", "Attacker", "Defender", " Casus belli", "Start Date", 
+				"End Date", "Total Losses", "Attacker Losses", "Defender Losses"});
+		battleData.put("1", new Object[] {"War", "Name", "Date", "Attacker", "Defender", "Type", "Result",
+				"Total Losses","Attacker Losses", "Defender Losses", "Attacker Leader", "Defender Leader"});
+		int rowNumber =0;
+		for (int i  = 0; i < this.warList.size(); i++ ) {
+			warData.put( Integer.toString(i + 2) , new Object[] {this.warList.get(i).getName(), 
+					this.warList.get(i).getOriginalAttacker(),
+					this.warList.get(i).getOriginalDefender(),
+					this.warList.get(i).getCasus_belli(), 
+					convertDate(this.warList.get(i).getStartDate()), 
+					convertDate(this.warList.get(i).getEndDate()), 
+					//this.warList.get(i).getStartDate(), 
+					//this.warList.get(i).getEndDate(), 
+					Integer.toString(warList.get(i).getWarTotalLosses()), 
+					Integer.toString(this.warList.get(i).getWarAttackerLosses()), 
+					Integer.toString(this.warList.get(i).getWarDefenderLosses())});
+			Battle[] battleList2 = this.warList.get(i).getBattleList();
+			for(int j = 0; j < battleList2.length; j++) {
+				if (battleList2[j].getLeaderAttacker() == null) {
+					battleList2[j].setLeaderAttacker("");
+				}
+				if (battleList2[j].getLeaderDefender() == null) {
+					battleList2[j].setLeaderDefender("");
+				}
+				battleData.put(Integer.toString( rowNumber + 2), new Object[] {this.warList.get(i).getName(), 
+						battleList2[j].getName(),
+						convertDate(battleList2[j].getDate()), 
+						battleList2[j].getAttacker(), 
+						battleList2[j].getDefender(), 
+						battleList2[j].getBattleType().name(), 
+						battleList2[j].getRes().name(),
+						Integer.toString(battleList2[j].getTotalLosses()), 
+						Integer.toString(battleList2[j].getAttackerLosses()), 
+						Integer.toString(battleList2[j].getDefenderLosses()), 
+						battleList2[j].getLeaderAttacker(), 
+						battleList2[j].getLeaderDefender()});
+				rowNumber++;
+			}
+		}
+		
+		Set<String> warKeyID = warData.keySet();
+		Set<String> battleKeyID = battleData.keySet();
+		
+		int rowWarID = 0;
+		int rowBattleID = 0;
+		
+		for (String key: warKeyID) {
+			row = spreadsheet1.createRow(rowWarID++);
+			Object[] objectArr = warData.get(key); 
+            int cellID = 0;
+            
+            for (Object obj: objectArr) {
+            	Cell cell = row.createCell(cellID++); 
+                cell.setCellValue((String)obj); 
+            }
+		}
+		
+		for (String key: battleKeyID) {
+			row = spreadsheet2.createRow(rowBattleID++);
+			Object[] objectArr = battleData.get(key); 
+            int cellID = 0;
+            
+            for (Object obj: objectArr) {
+            	Cell cell = row.createCell(cellID++); 
+                cell.setCellValue((String)obj); 
+            }
+		}
+		
+		FileOutputStream out = new FileOutputStream( 
+	            new File("C:\\Users\\sspring963\\Downloads\\test.xlsx")); 
+	  
+	        workbook.write(out); 
+	       out.close(); 
+	        
 		return warList;
 
+	}
+	
+	private String convertDate(String date) {
+		System.out.println("test" + date + "end");
+		if (date != null && !date.trim().isEmpty()) {
+			String[] arrOfDate = date.split("\\.");
+			
+			String newDate = arrOfDate[1] + "/" + arrOfDate[2] + "/" + arrOfDate[0];
+			return newDate;
+		} else {
+			return "";
+		}
+		
+		
 	}
 
 	/**

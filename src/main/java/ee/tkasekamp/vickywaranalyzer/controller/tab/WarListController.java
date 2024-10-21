@@ -67,6 +67,14 @@ public class WarListController extends AbstractController {
 
 	@FXML
 	private TableColumn<War, String> colEndDateWar;
+	
+	/*     */   private TableColumn<War, String> colWarTotalLosses;
+	@FXML
+/*     */   private TableColumn<War, String> colWarAttackerLosses;
+	@FXML
+/*     */   private TableColumn<War, String> colWarDefenderLosses;
+	
+	
 
 	private Tab tab;
 

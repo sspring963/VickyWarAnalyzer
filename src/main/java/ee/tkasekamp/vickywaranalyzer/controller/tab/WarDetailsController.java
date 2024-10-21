@@ -99,6 +99,10 @@ public class WarDetailsController extends AbstractController {
 
 	@FXML
 	private Label warGoalStateLabel;
+	@FXML
+/*     */   private TableColumn<Battle, Integer> colAttackerLeader;
+	@FXML
+/*     */   private TableColumn<Battle, Integer> colDefenderLeader;
 
 	@FXML
 	private WarCountryBox attackerBoxController;
@@ -182,6 +186,13 @@ public class WarDetailsController extends AbstractController {
 		colBattleTotalLosses
 				.setCellValueFactory(new PropertyValueFactory<>(
 						"totalLosses"));
+		colAttackerLeader
+		.setCellValueFactory(new PropertyValueFactory<>(
+				"leaderAttacker"));
+		
+		colDefenderLeader
+		.setCellValueFactory(new PropertyValueFactory<>(
+				"leaderDefender"));
 
 	}
 

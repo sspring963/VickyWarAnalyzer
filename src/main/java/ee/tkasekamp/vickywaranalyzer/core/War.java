@@ -2,6 +2,8 @@ package ee.tkasekamp.vickywaranalyzer.core;
 
 import java.util.Arrays;
 
+import ee.tkasekamp.vickywaranalyzer.core.Battle;
+
 /**
  * War class. All critical info and a list about war events.
  */
@@ -20,6 +22,10 @@ public class War {
 	private String startDate; // Set after reading
 	private String endDate = ""; // Set during reading
 	private String casus_belli = ""; // Primary casus belli displayed in table. Set after reading
+	
+	private int warTotalLosses = 0;
+	private int warAttackerLosses = 0;
+	private int warDefenderLosses = 0;
 	/* New from HoD */
 	private WarGoal originalWarGoal = new WarGoal();
 
@@ -145,6 +151,12 @@ public class War {
 
 	public void setBattleList(Battle[] battleList) {
 		this.battleList = battleList;
+		
+		for (Battle battle: this.battleList) {
+			 this.warAttackerLosses +=  battle.getAttackerLosses();
+			 this.warDefenderLosses += battle.getDefenderLosses();
+			 this.warTotalLosses += battle.getTotalLosses();
+		}
 	}
 
 	public JoinedCountry[] getCountryList() {
@@ -225,5 +237,24 @@ public class War {
 	public WarGoal getOriginalWarGoal() {
 		return originalWarGoal;
 	}
+	
+	public int getWarTotalLosses() {
+		return warTotalLosses;
+	}
+	public void setWarTotalLosses(int warTotalLosses) {
+		this.warTotalLosses = warTotalLosses;
+	}
+	public int getWarAttackerLosses() {
+		return warAttackerLosses;
+	}
+	public void setWarAttackerLosses(int warAttackerLosses) {
+		this.warAttackerLosses = warAttackerLosses;
+	}
+	public int getWarDefenderLosses() {
+		return warDefenderLosses;
+	}
+	public void setWarDefenderLosses(int warDefenderLosses) {
+		this.warDefenderLosses = warDefenderLosses;
+	} 
 
 }

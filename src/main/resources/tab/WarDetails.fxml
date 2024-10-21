@@ -38,6 +38,8 @@
 											 fx:id="colBattleResult"/>
 								<TableColumn prefWidth="110.0" text="Total losses"
 											 fx:id="colBattleTotalLosses"/>
+                            <TableColumn prefWidth="110.0" text="Attacker Leader" fx:id="colAttackerLeader" />
+                            <TableColumn prefWidth="110.0" text="Defender Leader" fx:id="colDefenderLeader" />
 							</columns>
 						</TableView>
 					</children>
